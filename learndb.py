@@ -137,6 +137,7 @@ def edit_entry(r, key_tuple, edit_pattern):
 
         r.set(key, json.dumps(obj))
 
+        return _lookup(r, key, index)
 
     return ENTRY_NOT_FOUND % key
 

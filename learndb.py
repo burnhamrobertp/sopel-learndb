@@ -132,7 +132,7 @@ def edit_entry(r, key_tuple, edit_pattern):
         find, replace = match.group(1, 2)
 
         obj = json.loads(existing_entry)
-        entry = re.sub(re.escape(find), re.escape(replace), obj.pop(index))
+        entry = re.sub(re.escape(find), replace, obj.pop(index))
         obj.insert(index, entry)
 
         r.set(key, json.dumps(obj))

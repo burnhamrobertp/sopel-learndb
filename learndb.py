@@ -58,7 +58,7 @@ def learn(bot, trigger):
     del_command = '%s%s del ' % (bot.config.core.prefix, learn.commands[0])
     
     # delete doesn't have an entry, only command and key
-    if del_command in trigger:
+    if trigger.startswith(del_command):
         _, command, key = trigger.split(' ', 2)
     else:
         _, command, key, entry = trigger.split(' ', 3)
@@ -123,8 +123,22 @@ def delete_entry(r, key_tuple):
     return ENTRY_NOT_FOUND % key
 
 
-def edit_entry(r, key, entry):
-    pass
+def edit_entry(r, key_tuple, edit_pattern):
+    key, index = key_tuple
+    existing_entry = r.get(key)
+
+    if existing_entry:
+        match = re.match(r"s/(.+)/(.+)/", edit_pattern)
+        find, replace = match.group(1, 2)
+
+        obj = json.loads(existing_entry)
+        entry = re.sub(re.escape(find), re.escape(replace), obj.pop(index))
+        obj.insert(index, entry)
+
+        r.set(key, json.dumps(obj))
+
+
+    return ENTRY_NOT_FOUND % key
 
 
 def clean_key(key):

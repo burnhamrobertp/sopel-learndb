@@ -6,6 +6,7 @@ ENTRY_NOT_FOUND = '`%s` does not exist in the learndb!'
 ENTRY_TOO_LONG = 'Eschew verbosity! Learndb entries have a max length of 255 characters.'
 ADD_SUCCESS = '`%s` entry added!'
 INVALID_KEY_FORMAT = 'Invalid key format!'
+INVALID_COMMAND_FORMAT = 'Invalid Command, syntax is `!learn (add|del|edit) KEY_NAME[PAGE_NUMBER] command_body`'
 
 
 def redis_connect():
@@ -76,8 +77,12 @@ def learn(bot, trigger):
             message = add_entry(r, key_tuple, entry)
         elif command == 'edit':
             message = edit_entry(r, key_tuple, entry)
+        else:
+            message = INVALID_COMMAND_FORMAT
     elif command == 'del':
         message = delete_entry(r, key_tuple)
+    else:
+        message = INVALID_COMMAND_FORMAT
 
     if message:
         bot.reply(message)
@@ -129,6 +134,10 @@ def edit_entry(r, key_tuple, edit_pattern):
 
     if existing_entry:
         match = re.match(r"s/(.+)/(.+)/", edit_pattern)
+
+        if match is None:
+            return ''
+
         find, replace = match.group(1, 2)
 
         obj = json.loads(existing_entry)
